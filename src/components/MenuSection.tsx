@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { MENU_ITEMS, BatataItem } from '../data/menu';
-import { Plus, Sparkles, Gift } from 'lucide-react';
+import { Sparkles, Plus } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 interface MenuSectionProps {
@@ -17,137 +17,109 @@ export const MenuSection: React.FC<MenuSectionProps> = ({ onSelectItemToCustomiz
   });
 
   return (
-    <section id="cardapio" className="py-10 sm:py-16 md:py-20 max-w-6xl mx-auto px-3.5 sm:px-6">
+    <section id="cardapio" className="py-8 sm:py-14 md:py-16 max-w-5xl mx-auto px-3.5 sm:px-6">
       {/* Título da Seção */}
-      <div className="text-center max-w-2xl mx-auto mb-8 sm:mb-12">
-        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-100 text-amber-900 text-xs font-bold uppercase tracking-wider mb-2.5">
+      <div className="text-center max-w-xl mx-auto mb-6 sm:mb-10">
+        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-100 text-amber-900 text-xs font-bold uppercase tracking-wider mb-2">
           <Sparkles className="w-3.5 h-3.5 text-amber-600" />
           Cardápio Oficial
         </div>
-        <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-stone-900 tracking-tight font-display">
+        <h2 className="text-2xl sm:text-3xl font-extrabold text-stone-900 tracking-tight font-display">
           Escolha a sua batata de hoje
         </h2>
-        <p className="mt-2 text-stone-600 text-xs sm:text-sm md:text-base leading-relaxed">
-          Feitas com batata selecionada, recheio farto e gratinadas no forno. 
+        <p className="mt-1.5 text-stone-600 text-xs sm:text-sm">
           Todas acompanham <strong>1 Coca-Cola lata 200ml geladinha de brinde</strong>!
         </p>
 
-        {/* Filtros Compactos */}
-        <div className="mt-5 sm:mt-8 flex flex-wrap items-center justify-center gap-1.5 sm:gap-2">
+        {/* Filtros em Abas Estilo Anota AI */}
+        <div className="mt-4 sm:mt-6 flex items-center justify-center gap-1.5 sm:gap-2">
           <button
             onClick={() => setActiveFilter('all')}
-            className={`px-3.5 py-1.5 sm:px-5 sm:py-2 rounded-full text-xs sm:text-sm font-semibold transition-all ${
+            className={`px-3.5 py-1.5 rounded-full text-xs sm:text-sm font-semibold transition-all ${
               activeFilter === 'all'
-                ? 'bg-amber-500 text-stone-950 shadow-sm'
+                ? 'bg-stone-900 text-white shadow-sm'
                 : 'bg-stone-100 text-stone-600 hover:bg-stone-200'
             }`}
           >
-            Todos ({MENU_ITEMS.length})
+            Todas ({MENU_ITEMS.length})
           </button>
           <button
             onClick={() => setActiveFilter('highlights')}
-            className={`px-3.5 py-1.5 sm:px-5 sm:py-2 rounded-full text-xs sm:text-sm font-semibold transition-all ${
+            className={`px-3.5 py-1.5 rounded-full text-xs sm:text-sm font-semibold transition-all ${
               activeFilter === 'highlights'
-                ? 'bg-amber-500 text-stone-950 shadow-sm'
+                ? 'bg-stone-900 text-white shadow-sm'
                 : 'bg-stone-100 text-stone-600 hover:bg-stone-200'
             }`}
           >
-            ⭐ Mais Pedidos
+            ⭐ Destaques
           </button>
           <button
             onClick={() => setActiveFilter('creamy')}
-            className={`px-3.5 py-1.5 sm:px-5 sm:py-2 rounded-full text-xs sm:text-sm font-semibold transition-all ${
+            className={`px-3.5 py-1.5 rounded-full text-xs sm:text-sm font-semibold transition-all ${
               activeFilter === 'creamy'
-                ? 'bg-amber-500 text-stone-950 shadow-sm'
+                ? 'bg-stone-900 text-white shadow-sm'
                 : 'bg-stone-100 text-stone-600 hover:bg-stone-200'
             }`}
           >
-            🧀 Cremosos
+            🧀 Cremosas
           </button>
         </div>
       </div>
 
-      {/* Grid de Produtos Otimizado para Mobile */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+      {/* Lista Estilo Anota AI / iFood (Mobile & Desktop) */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
         {filteredItems.map((item) => {
           return (
             <motion.div
               layout
               key={item.id}
-              initial={{ opacity: 0, y: 15 }}
+              initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.25 }}
-              className="bg-white rounded-2xl sm:rounded-3xl overflow-hidden border border-stone-200/80 shadow-sm hover:shadow-lg transition-all duration-300 flex flex-col justify-between group cursor-pointer"
+              transition={{ duration: 0.2 }}
               onClick={() => onSelectItemToCustomize(item)}
+              className="bg-white rounded-2xl p-3 sm:p-3.5 border border-stone-200/90 hover:border-amber-400 hover:shadow-md active:scale-[0.99] transition-all cursor-pointer flex items-center justify-between gap-3 group"
             >
-              {/* Imagem do Produto Compacta */}
-              <div className="relative h-44 sm:h-52 overflow-hidden bg-stone-100">
+              {/* Informações à Esquerda */}
+              <div className="flex-1 min-w-0 pr-1">
+                <div className="flex items-center gap-1.5">
+                  <h3 className="font-bold text-sm sm:text-base text-stone-900 group-hover:text-amber-600 transition-colors">
+                    {item.name}
+                  </h3>
+                  {item.tag && (
+                    <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-amber-100 text-amber-800 shrink-0">
+                      {item.tag}
+                    </span>
+                  )}
+                </div>
+
+                {/* Ingredientes Diretos e Limpos */}
+                <p className="text-xs text-stone-500 mt-1 leading-snug line-clamp-2">
+                  {item.description}
+                </p>
+
+                {/* Preço e Tag de Brinde */}
+                <div className="flex items-center gap-2 mt-2.5">
+                  <span className="font-extrabold text-sm sm:text-base text-stone-900">
+                    R$ {item.price.toFixed(2).replace('.', ',')}
+                  </span>
+                  <span className="text-[10px] font-semibold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200/60">
+                    + Coca Grátis
+                  </span>
+                </div>
+              </div>
+
+              {/* Foto Quadrada Compacta à Direita */}
+              <div className="relative w-20 h-20 sm:w-24 sm:h-24 rounded-xl sm:rounded-2xl overflow-hidden bg-stone-100 shrink-0 border border-stone-100">
                 <img
                   src={item.image}
                   alt={item.name}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                 />
-                
-                {/* Tag de destaque */}
-                {item.tag && (
-                  <div className="absolute top-2.5 left-2.5 px-2 py-0.5 rounded-full bg-stone-950/85 backdrop-blur-sm text-amber-300 text-[11px] font-bold shadow-sm">
-                    {item.tag}
-                  </div>
-                )}
-
-                {/* Tag do Brinde */}
-                <div className="absolute top-2.5 right-2.5 flex items-center gap-1 px-2 py-0.5 rounded-full bg-red-600/95 backdrop-blur-sm text-white text-[10px] sm:text-[11px] font-bold shadow-sm">
-                  <Gift className="w-3 h-3" />
-                  <span>+ Coca 200ml Grátis</span>
+                <div className="absolute bottom-1 right-1 w-6 h-6 rounded-lg bg-stone-900/80 text-white flex items-center justify-center backdrop-blur-sm group-hover:bg-amber-500 group-hover:text-stone-950 transition-colors">
+                  <Plus className="w-3.5 h-3.5" />
                 </div>
               </div>
 
-              {/* Informações Compactas */}
-              <div className="p-4 sm:p-5 flex-1 flex flex-col justify-between">
-                <div>
-                  <div className="flex items-baseline justify-between gap-2">
-                    <h3 className="text-base sm:text-lg font-bold text-stone-900 group-hover:text-amber-600 transition-colors">
-                      {item.name}
-                    </h3>
-                    <span className="text-base sm:text-lg font-extrabold text-amber-600 shrink-0">
-                      R$ {item.price.toFixed(2).replace('.', ',')}
-                    </span>
-                  </div>
-
-                  <p className="mt-1.5 text-stone-600 text-xs sm:text-sm leading-relaxed line-clamp-2">
-                    {item.description}
-                  </p>
-
-                  {/* Ingredientes como tags compactas */}
-                  <div className="mt-3 flex flex-wrap gap-1">
-                    {item.ingredients.map((ing, idx) => (
-                      <span
-                        key={idx}
-                        className="inline-block text-[10px] sm:text-[11px] font-medium px-2 py-0.5 rounded-md bg-stone-100 text-stone-700"
-                      >
-                        {ing}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Ação Apenas com o Botão 'Pedir' */}
-                <div className="mt-4 pt-3 border-t border-stone-100 flex items-center justify-end">
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onSelectItemToCustomize(item);
-                    }}
-                    id={`add-to-cart-${item.id}`}
-                    className="flex items-center justify-center gap-1.5 w-full sm:w-auto px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-stone-900 hover:bg-amber-500 hover:text-stone-950 text-white active:scale-95 transition-all shadow-sm"
-                  >
-                    <Plus className="w-3.5 h-3.5" />
-                    <span>Pedir</span>
-                  </button>
-                </div>
-
-              </div>
             </motion.div>
           );
         })}
