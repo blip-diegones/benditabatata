@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { BatataItem } from '../data/menu';
-import { ADDON_OPTIONS, REMOVAL_OPTIONS, AddonOption } from '../data/addons';
-import { X, Plus, Minus, Flame, Gift, Sparkles, Check } from 'lucide-react';
+import { ADDON_OPTIONS, AddonOption } from '../data/addons';
+import { X, Plus, Minus, Gift, Sparkles, Check } from 'lucide-react';
 
 export interface SelectedCustomization {
   addons: AddonOption[];
@@ -27,7 +27,6 @@ export const CustomizeModal: React.FC<CustomizeModalProps> = ({
   if (!isOpen || !item) return null;
 
   const [selectedAddons, setSelectedAddons] = useState<AddonOption[]>([]);
-  const [selectedRemovals, setSelectedRemovals] = useState<string[]>([]);
   const [notes, setNotes] = useState('');
   const [quantity, setQuantity] = useState(1);
 
@@ -39,14 +38,6 @@ export const CustomizeModal: React.FC<CustomizeModalProps> = ({
     }
   };
 
-  const toggleRemoval = (removal: string) => {
-    if (selectedRemovals.includes(removal)) {
-      setSelectedRemovals(selectedRemovals.filter(r => r !== removal));
-    } else {
-      setSelectedRemovals([...selectedRemovals, removal]);
-    }
-  };
-
   const addonsTotal = selectedAddons.reduce((acc, curr) => acc + curr.price, 0);
   const unitPrice = item.price + addonsTotal;
   const totalPrice = unitPrice * quantity;
@@ -54,14 +45,13 @@ export const CustomizeModal: React.FC<CustomizeModalProps> = ({
   const handleConfirm = () => {
     onConfirm(item, {
       addons: selectedAddons,
-      removals: selectedRemovals,
+      removals: [],
       notes,
       quantity,
       totalPrice
     });
     // Reset
     setSelectedAddons([]);
-    setSelectedRemovals([]);
     setNotes('');
     setQuantity(1);
     onClose();
@@ -69,10 +59,10 @@ export const CustomizeModal: React.FC<CustomizeModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto bg-stone-950/70 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4">
-      <div className="bg-white rounded-3xl max-w-lg w-full overflow-hidden shadow-2xl border border-stone-200/80 my-8 flex flex-col max-h-[90vh]">
+      <div className="bg-white rounded-2xl sm:rounded-3xl max-w-md w-full overflow-hidden shadow-2xl border border-stone-200/80 my-4 flex flex-col max-h-[92vh]">
         
-        {/* Cabeçalho com Foto */}
-        <div className="relative h-48 sm:h-56 bg-stone-100 shrink-0">
+        {/* Cabeçalho com Foto Otimizada para Mobile */}
+        <div className="relative h-40 sm:h-52 bg-stone-100 shrink-0">
           <img 
             src={item.image} 
             alt={item.name} 
@@ -80,14 +70,14 @@ export const CustomizeModal: React.FC<CustomizeModalProps> = ({
           />
           <button
             onClick={onClose}
-            className="absolute top-4 right-4 w-9 h-9 rounded-full bg-stone-950/60 text-white hover:bg-stone-950 flex items-center justify-center backdrop-blur-md transition-colors"
+            className="absolute top-3 right-3 w-8 h-8 rounded-full bg-stone-950/60 text-white hover:bg-stone-950 flex items-center justify-center backdrop-blur-md transition-colors"
           >
-            <X className="w-5 h-5" />
+            <X className="w-4 h-4" />
           </button>
           
-          <div className="absolute bottom-3 left-3 px-3 py-1 rounded-full bg-red-600 text-white text-xs font-bold shadow-sm flex items-center gap-1.5">
-            <Gift className="w-3.5 h-3.5" />
-            <span>Acompanha Coca-Cola 200ml Grátis!</span>
+          <div className="absolute bottom-2.5 left-2.5 px-2.5 py-1 rounded-full bg-red-600 text-white text-[11px] font-bold shadow-sm flex items-center gap-1.5">
+            <Gift className="w-3 h-3" />
+            <span>+ Coca 200ml Grátis!</span>
           </div>
         </div>
 
@@ -148,44 +138,14 @@ export const CustomizeModal: React.FC<CustomizeModalProps> = ({
             </div>
           </div>
 
-          {/* Seção 2: Preferências & Ponto */}
-          <div>
-            <div className="flex items-center justify-between mb-2.5">
-              <span className="text-xs font-bold uppercase tracking-wider text-stone-800 flex items-center gap-1">
-                <Flame className="w-3.5 h-3.5 text-red-500" />
-                Preferências do seu prato
-              </span>
-            </div>
-
-            <div className="flex flex-wrap gap-2">
-              {REMOVAL_OPTIONS.map((opt) => {
-                const isSelected = selectedRemovals.includes(opt);
-                return (
-                  <button
-                    type="button"
-                    key={opt}
-                    onClick={() => toggleRemoval(opt)}
-                    className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-all ${
-                      isSelected
-                        ? 'bg-stone-900 text-white border-stone-900'
-                        : 'bg-stone-100 text-stone-700 border-stone-200 hover:bg-stone-200'
-                    }`}
-                  >
-                    {opt}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* Observação */}
+          {/* Observação / Preferência Digitada */}
           <div>
             <label className="block text-xs font-bold text-stone-700 mb-1.5">
-              Alguma outra observação para a cozinha?
+              Alguma preferência ou observação? (Opcional)
             </label>
             <input
               type="text"
-              placeholder="Ex: Caprichar no queijo bem tostado!"
+              placeholder="Ex: Sem batata palha / queijo bem tostadinho"
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               className="w-full text-xs sm:text-sm px-3.5 py-2.5 rounded-xl border border-stone-300 focus:outline-none focus:ring-2 focus:ring-amber-500"
