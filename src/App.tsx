@@ -4,31 +4,54 @@ import { Hero } from './components/Hero';
 import { BenditaBento } from './components/BenditaBento';
 import { MenuSection } from './components/MenuSection';
 import { CartDrawer, CartItem } from './components/CartDrawer';
+import { CustomizeModal, SelectedCustomization } from './components/CustomizeModal';
 import { Footer } from './components/Footer';
 import { BatataItem } from './data/menu';
-import { ShoppingBag, ArrowUp } from 'lucide-react';
+import { ShoppingBag } from 'lucide-react';
 
 export default function App() {
   const [cart, setCart] = useState<CartItem[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
+  const [selectedItemToCustomize, setSelectedItemToCustomize] = useState<BatataItem | null>(null);
 
-  const handleAddToCart = (item: BatataItem) => {
+  const handleOpenCustomize = (item: BatataItem) => {
+    setSelectedItemToCustomize(item);
+  };
+
+  const handleConfirmCustomize = (item: BatataItem, custom: SelectedCustomization) => {
+    // Gerar identificador único baseado no item + adicionais + remoções
+    const customKey = `${item.id}-${custom.addons.map(a => a.id).sort().join('_')}-${custom.removals.sort().join('_')}-${custom.notes}`;
+
     setCart(prev => {
-      const existing = prev.find(c => c.item.id === item.id);
+      const existing = prev.find(c => c.id === customKey);
       if (existing) {
         return prev.map(c => 
-          c.item.id === item.id ? { ...c, quantity: c.quantity + 1 } : c
+          c.id === customKey ? { ...c, quantity: c.quantity + custom.quantity } : c
         );
       }
-      return [...prev, { item, quantity: 1 }];
+      return [
+        ...prev,
+        {
+          id: customKey,
+          item,
+          quantity: custom.quantity,
+          addons: custom.addons,
+          removals: custom.removals,
+          notes: custom.notes,
+          unitPrice: custom.totalPrice / custom.quantity
+        }
+      ];
     });
+
+    // Abre a sacola automaticamente para o cliente ver o item adicionado
+    setIsCartOpen(true);
   };
 
   const handleUpdateQuantity = (id: string, delta: number) => {
     setCart(prev => {
       return prev
         .map(c => {
-          if (c.item.id === id) {
+          if (c.id === id) {
             const newQty = c.quantity + delta;
             return newQty > 0 ? { ...c, quantity: newQty } : null;
           }
@@ -39,7 +62,7 @@ export default function App() {
   };
 
   const handleRemoveItem = (id: string) => {
-    setCart(prev => prev.filter(c => c.item.id !== id));
+    setCart(prev => prev.filter(c => c.id !== id));
   };
 
   const handleClearCart = () => {
@@ -80,11 +103,19 @@ export default function App() {
         <BenditaBento />
 
         {/* Cardápio de Vendas com Fotos Reais e Ingredientes */}
-        <MenuSection onAddToCart={handleAddToCart} />
+        <MenuSection onSelectItemToCustomize={handleOpenCustomize} />
       </main>
 
       {/* Footer */}
       <Footer />
+
+      {/* Modal de Personalização / Turbinar Batata */}
+      <CustomizeModal
+        item={selectedItemToCustomize}
+        isOpen={!!selectedItemToCustomize}
+        onClose={() => setSelectedItemToCustomize(null)}
+        onConfirm={handleConfirmCustomize}
+      />
 
       {/* Carrinho Lateral / Modal de Checkout WhatsApp */}
       <CartDrawer

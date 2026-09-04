@@ -1,29 +1,20 @@
 import React, { useState } from 'react';
 import { MENU_ITEMS, BatataItem } from '../data/menu';
-import { Plus, Check, Sparkles, Gift } from 'lucide-react';
+import { Plus, Sparkles, Gift, SlidersHorizontal } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 interface MenuSectionProps {
-  onAddToCart: (item: BatataItem) => void;
+  onSelectItemToCustomize: (item: BatataItem) => void;
 }
 
-export const MenuSection: React.FC<MenuSectionProps> = ({ onAddToCart }) => {
+export const MenuSection: React.FC<MenuSectionProps> = ({ onSelectItemToCustomize }) => {
   const [activeFilter, setActiveFilter] = useState<'all' | 'highlights' | 'creamy'>('all');
-  const [addedItemIds, setAddedItemIds] = useState<Record<string, boolean>>({});
 
   const filteredItems = MENU_ITEMS.filter(item => {
     if (activeFilter === 'highlights') return item.highlight;
     if (activeFilter === 'creamy') return item.name.toLowerCase().includes('frango') || item.name.toLowerCase().includes('queijo');
     return true;
   });
-
-  const handleAdd = (item: BatataItem) => {
-    onAddToCart(item);
-    setAddedItemIds(prev => ({ ...prev, [item.id]: true }));
-    setTimeout(() => {
-      setAddedItemIds(prev => ({ ...prev, [item.id]: false }));
-    }, 1200);
-  };
 
   return (
     <section id="cardapio" className="py-16 md:py-24 max-w-6xl mx-auto px-4 sm:px-6">
@@ -79,8 +70,6 @@ export const MenuSection: React.FC<MenuSectionProps> = ({ onAddToCart }) => {
       {/* Grid de Produtos */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
         {filteredItems.map((item) => {
-          const isAdded = addedItemIds[item.id];
-
           return (
             <motion.div
               layout
@@ -88,7 +77,8 @@ export const MenuSection: React.FC<MenuSectionProps> = ({ onAddToCart }) => {
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3 }}
-              className="bg-white rounded-2xl overflow-hidden border border-stone-200/80 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between group"
+              className="bg-white rounded-3xl overflow-hidden border border-stone-200/80 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between group cursor-pointer"
+              onClick={() => onSelectItemToCustomize(item)}
             >
               {/* Imagem do Produto */}
               <div className="relative h-56 sm:h-60 overflow-hidden bg-stone-100">
@@ -106,7 +96,7 @@ export const MenuSection: React.FC<MenuSectionProps> = ({ onAddToCart }) => {
                 )}
 
                 {/* Tag do Brinde */}
-                <div className="absolute top-3 right-3 flex items-center gap-1 px-2.5 py-1 rounded-full bg-red-600/90 backdrop-blur-sm text-white text-[11px] font-bold shadow-sm">
+                <div className="absolute top-3 right-3 flex items-center gap-1 px-2.5 py-1 rounded-full bg-red-600/95 backdrop-blur-sm text-white text-[11px] font-bold shadow-sm">
                   <Gift className="w-3 h-3" />
                   <span>+ Coca 200ml Grátis</span>
                 </div>
@@ -141,32 +131,24 @@ export const MenuSection: React.FC<MenuSectionProps> = ({ onAddToCart }) => {
                   </div>
                 </div>
 
-                {/* Ação de Adicionar */}
+                {/* Ação de Personalizar e Adicionar */}
                 <div className="mt-6 pt-4 border-t border-stone-100 flex items-center justify-between">
-                  <div className="text-xs text-stone-500 font-medium">
-                    Serve 1 pessoa super bem
+                  <div className="text-[11px] text-amber-700 font-semibold flex items-center gap-1">
+                    <SlidersHorizontal className="w-3.5 h-3.5" />
+                    <span>Personalizável</span>
                   </div>
 
                   <button
-                    onClick={() => handleAdd(item)}
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onSelectItemToCustomize(item);
+                    }}
                     id={`add-to-cart-${item.id}`}
-                    className={`flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all ${
-                      isAdded
-                        ? 'bg-emerald-600 text-white shadow-md shadow-emerald-600/20'
-                        : 'bg-stone-900 hover:bg-amber-500 hover:text-stone-950 text-white active:scale-95'
-                    }`}
+                    className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-stone-900 hover:bg-amber-500 hover:text-stone-950 text-white active:scale-95 transition-all shadow-sm"
                   >
-                    {isAdded ? (
-                      <>
-                        <Check className="w-4 h-4" />
-                        <span>Adicionado!</span>
-                      </>
-                    ) : (
-                      <>
-                        <Plus className="w-4 h-4" />
-                        <span>Adicionar</span>
-                      </>
-                    )}
+                    <Plus className="w-4 h-4" />
+                    <span>Pedir / Personalizar</span>
                   </button>
                 </div>
 
